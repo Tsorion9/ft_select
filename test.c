@@ -6,6 +6,7 @@
 #include <curses.h>
 #include <term.h>
 #include <string.h>
+#include <signal.h>
 
 static struct termios settings;
 char buf[100];
@@ -70,12 +71,43 @@ void		test_clean_screen(void)
 	bzero(buffer, 100);
 }
 
+void		test_absolute_cursor_position(void)
+{
+	buffer = buf;
+	tputs(tgoto(tgetstr("cm", &buffer), 1, 2), 1, ft_putint);
+	buffer = buf;
+	bzero(buffer, 100);
+	printf("\033[1;34mCursor was here\033[0m\n");
+	tputs(tgoto(tgetstr("cm", &buffer), 1, 3), 1, ft_putint);
+	buffer = buf;
+	bzero(buffer, 100);
+	printf("\033[1;34mCursor was here\033[0m\n");
+}
+
+void		resize(int a)
+{
+	test_clean_screen();
+	//tputs(tgetstr("rc", NULL), 1, ft_putint);
+	//tputs(tgetstr("cd", NULL), 1, ft_putint);
+	buffer = buf;
+	tputs(tgoto(tgetstr("cm", &buffer), 1, 2), 1, ft_putint);
+	buffer = buf;
+	bzero(buffer, 100);
+	printf("\033[1;34mCursor was here\033[0m\n");
+	tputs(tgoto(tgetstr("cm", &buffer), 1, 3), 1, ft_putint);
+	buffer = buf;
+	bzero(buffer, 100);
+	printf("\033[1;34mCursor was here\033[0m\n");
+}
+
 int			main(int ac, char **av)
 {
 	char buf[4096];
 	char *termtype;
 	char room_termtype[2048];
 
+	signal(SIGWINCH, resize);
+	read(STDIN_FILENO, buf, 4096);
 	new_term_settings();
 	termtype = getenv("TERM");
 	if (termtype == NULL || tgetent(room_termtype, termtype) != 1 || ac < 2)
@@ -88,7 +120,15 @@ int			main(int ac, char **av)
 	else if (strcmp(av[1], "tgetflag") == 0)
 		test_tgetflag();
 	else if (strcmp(av[1], "full_screen") == 0)
+	{
 		test_clean_screen();
+		read(STDIN_FILENO, buf, 4096);
+	}
+	else if (strcmp(av[1], "absolute_position") == 0)
+	{
+		test_clean_screen();
+		test_absolute_cursor_position();
+	}
 	return_term_settings();
 	return (0);
 }
