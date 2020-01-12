@@ -1,11 +1,11 @@
 #include <unistd.h>
-#include <stdio.h>
+//#include <stdio.h>
 #include <termios.h>
 #include <stdlib.h>
 #include <sys/ioctl.h>
 #include <curses.h>
 #include <term.h>
-#include <string.h>
+//#include <string.h>
 #include <signal.h>
 
 static struct termios settings;
