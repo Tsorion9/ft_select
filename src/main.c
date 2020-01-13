@@ -1,4 +1,20 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   main.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mphobos <mphobos@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2020/01/13 13:10:07 by mphobos           #+#    #+#             */
+/*   Updated: 2020/01/13 16:33:19 by mphobos          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "ft_select.h"
+
+/*
+** Настраивает терминал (неканонический ввод)
+*/
 
 void        into_term_can_mode(void)
 {
@@ -13,10 +29,18 @@ void        into_term_can_mode(void)
     tcsetattr(STDIN_FILENO, TCSANOW, &new_settings);
 }
 
+/*
+** Возвращает настройки терминала (канонический ввод)
+*/
+
 void        return_term_mode(void)
 {
     tcsetattr(STDIN_FILENO, TCSANOW, &settings);
 }
+
+/*
+** Выход из программы
+*/
 
 void        exit_program(int a)
 {
@@ -25,14 +49,30 @@ void        exit_program(int a)
     exit(0);
 }
 
+/*
+** Настройка сигналов и внесение терминала в БД termcap
+*/
+
 void        set_signal(void)
 {
+    char *termtype;
+	char room_termtype[2048];
+
+    termtype = getenv("TERM");
+	if (termtype == NULL || tgetent(room_termtype, termtype) != 1)
+	{
+		ft_putstr("error\n");
+		exit_program(0);
+	}
     signal(SIGINT, exit_program);
 }
 
 int         main(int ac, char **av)
 {
+    t_lstr   *lstr;
+
     into_term_can_mode();
+    set_signal();
     if (ac < 2)
     {
         ft_putstr("usage: ");
@@ -40,7 +80,12 @@ int         main(int ac, char **av)
         ft_putstr(" [arg1] [arg2] ...\n");
         exit_program(0);
     }
-    //printf("%s your text here %s", tgetstr("us", NULL), tgetstr("ue", NULL));
+    lstr = init_lstr(av + 1);
+    if (check_winsize(tgetnum("co"), tgetnum("li"), lstr) == 1)
+        printf("yes\n");
+    else
+        printf("no\n");
+    free_lstr(lstr);
     return_term_mode();
     return (0);
 }

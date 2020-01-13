@@ -42,7 +42,7 @@ void		test_tgetflag(void)
 {
 	int flag_overstrike;
 	int flag_home;
-	
+
 	flag_overstrike = tgetflag("os");
 	flag_home = tgetflag("hz");
 	if (flag_overstrike == 0)
