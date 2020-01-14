@@ -68,6 +68,7 @@ t_lstr		*init_lstr(char **av)
 	t_lstr	*head;
 
 	lstr = create_lstr(*av);
+	lstr->hover_over = 1;
 	head = lstr;
 	av++;
 	while (*av != NULL)
@@ -79,5 +80,6 @@ t_lstr		*init_lstr(char **av)
         lstr = lstr->next;
 	lstr->last = 1;
 	lstr->next = head;
+	head->prev = lstr;
 	return (head);
 }

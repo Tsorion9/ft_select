@@ -67,10 +67,58 @@ void        set_signal(void)
     signal(SIGINT, exit_program);
 }
 
+void        change_hover_over(t_lstr *lstr, int flag)
+{
+    while (lstr->hover_over != 1)
+        lstr = lstr->next;
+    lstr->hover_over = 0;
+    if (flag == 0)
+        lstr->next->hover_over = 1;
+    else if (flag == 1)
+        lstr->prev->hover_over = 1;
+}
+
+void        change_chose(t_lstr *lstr)
+{
+    while (lstr->hover_over != 1)
+        lstr = lstr->next;
+    if (lstr->chose == 1)
+        lstr->chose = 0;
+    else
+        lstr->chose = 1;
+}
+
+void        execute_command(t_lstr *lstr)
+{
+    char    c;
+
+    while(21)
+    {
+        read(STDERR_FILENO, &c, 1);
+        if (c == 66)
+        {
+            change_hover_over(lstr, 0);
+            clear_window();
+            display_lstr(tgetnum("co"), tgetnum("li"), lstr);
+        }
+        else if (c == 65)
+        {
+            change_hover_over(lstr, 1);
+            clear_window();
+            display_lstr(tgetnum("co"), tgetnum("li"), lstr);
+        }
+        else if (c == 32)
+        {
+            change_chose(lstr);
+            clear_window();
+            display_lstr(tgetnum("co"), tgetnum("li"), lstr);
+        }
+    }
+}
+
 int         main(int ac, char **av)
 {
     t_lstr   *lstr;
-    char    buf[10];
 
     into_term_can_mode();
     set_signal();
@@ -83,8 +131,7 @@ int         main(int ac, char **av)
     }
     lstr = init_lstr(av + 1);
     display_lstr(tgetnum("co"), tgetnum("li"), lstr);
-    read(0, buf, 1);
-    clear_window();
+    execute_command(lstr);
     free_lstr(lstr);
     return_term_mode();
     return (0);

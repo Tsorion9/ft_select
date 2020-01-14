@@ -133,7 +133,16 @@ void		print_lstr(int start, int finish, t_lstr *lstr, int width)
 	i = 0;
 	while (start < finish)
 	{
+		if (lstr->hover_over == 1)
+			ft_putstr("\033[4m");
+		if (lstr->color == 1)
+			ft_putstr("\033[34m");
+		else if (lstr->color == 2)
+			ft_putstr("\033[31m");
+		if (lstr->chose == 1)
+			ft_putstr("\033[1m");
 		ft_putstr(lstr->name);
+		ft_putstr("\033[\033[0m");
 		i++;
 		absolute_cursor_pos(width, i);
 		lstr = lstr->next;
