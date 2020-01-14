@@ -70,6 +70,7 @@ void        set_signal(void)
 int         main(int ac, char **av)
 {
     t_lstr   *lstr;
+    char    buf[10];
 
     into_term_can_mode();
     set_signal();
@@ -81,10 +82,9 @@ int         main(int ac, char **av)
         exit_program(0);
     }
     lstr = init_lstr(av + 1);
-    if (check_winsize(tgetnum("co"), tgetnum("li"), lstr) == 1)
-        printf("yes\n");
-    else
-        printf("no\n");
+    display_lstr(tgetnum("co"), tgetnum("li"), lstr);
+    read(0, buf, 1);
+    clear_window();
     free_lstr(lstr);
     return_term_mode();
     return (0);

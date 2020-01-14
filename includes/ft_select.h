@@ -46,6 +46,8 @@ t_lstr					*init_lstr(char **av);
 int						check_winsize(int col, int len, t_lstr *lstr);
 int						max_strlen(t_lstr *lstr, int start, int finish);
 int						count_lstr(t_lstr *lstr);
+void					display_lstr(int col, int lin, t_lstr *lstr);
+void					clear_window(void);
 
 /*
 ** free.c

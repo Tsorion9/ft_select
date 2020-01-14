@@ -87,8 +87,8 @@ void		test_absolute_cursor_position(void)
 void		resize(int a)
 {
 	test_clean_screen();
-	//tputs(tgetstr("rc", NULL), 1, ft_putint);
-	//tputs(tgetstr("cd", NULL), 1, ft_putint);
+	tputs(tgetstr("rc", NULL), 1, ft_putint);
+	tputs(tgetstr("cd", NULL), 1, ft_putint);
 	buffer = buf;
 	tputs(tgoto(tgetstr("cm", &buffer), 1, 2), 1, ft_putint);
 	buffer = buf;
@@ -107,7 +107,7 @@ int			main(int ac, char **av)
 	char room_termtype[2048];
 
 	signal(SIGWINCH, resize);
-	read(STDIN_FILENO, buf, 4096);
+	//read(STDIN_FILENO, buf, 4096);
 	new_term_settings();
 	termtype = getenv("TERM");
 	if (termtype == NULL || tgetent(room_termtype, termtype) != 1 || ac < 2)
