@@ -44,8 +44,8 @@ void        			print_result(t_lstr *lstr);
 */
 
 void       				execute_command(t_lstr *lstr);
-void        			execute_command_sup1(long c);
-void        			execute_command_sup(long c);
+void        			execute_command_sup1(t_lstr **lstr, long c);
+void        			execute_command_sup(t_lstr **lstr, long c);
 
 /*
 ** list.c
@@ -80,7 +80,7 @@ void        			change_chose_left(t_lstr *lstr, int lin);
 void        			change_chose_right(t_lstr *lstr, int lin);
 void        			change_chose(t_lstr *lstr);
 void        			change_hover_over(t_lstr *lstr, int flag);
-void        			delete_lstr(t_lstr **lstr);
+void        			delete_lstr(t_lstr ***lstr);
 
 /*
 ** signal.c

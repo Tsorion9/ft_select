@@ -6,7 +6,7 @@
 /*   By: mphobos <mphobos@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/15 13:09:58 by mphobos           #+#    #+#             */
-/*   Updated: 2020/01/15 18:48:08 by mphobos          ###   ########.fr       */
+/*   Updated: 2020/01/15 18:58:41 by mphobos          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,31 +108,31 @@ void		change_chose_left(t_lstr *lstr, int lin)
 ** Удаление строки из lstr
 */
 
-void		delete_lstr(t_lstr **lstr)
+void		delete_lstr(t_lstr ***lstr)
 {
 	t_lstr	*head;
 	t_lstr	*tmp;
 
-	if ((*lstr)->next == *lstr)
+	if ((**lstr)->next == **lstr)
 	{
-		free((*lstr)->name);
-		free((*lstr));
+		free((**lstr)->name);
+		free((**lstr));
 		clear_window();
 		return_term_mode();
 		exit(0);
 	}
-	head = *lstr;
-	while ((*lstr)->hover_over != 1)
-		*lstr = (*lstr)->next;
-	if ((*lstr)->prev->last == 1)
-		head = (*lstr)->next;
-	tmp = *lstr;
-	(*lstr)->prev->next = (*lstr)->next;
-	(*lstr)->next->prev = (*lstr)->prev;
-	if ((*lstr)->last == 1)
-		(*lstr)->prev->last = 1;
-	(*lstr)->next->hover_over = 1;
-	(*lstr) = head;
+	head = **lstr;
+	while ((**lstr)->hover_over != 1)
+		**lstr = (**lstr)->next;
+	if ((**lstr)->prev->last == 1)
+		head = (**lstr)->next;
+	tmp = **lstr;
+	(**lstr)->prev->next = (**lstr)->next;
+	(**lstr)->next->prev = (**lstr)->prev;
+	if ((**lstr)->last == 1)
+		(**lstr)->prev->last = 1;
+	(**lstr)->next->hover_over = 1;
+	(**lstr) = head;
 	free(tmp->name);
 	free(tmp);
 }

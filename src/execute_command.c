@@ -6,39 +6,39 @@
 /*   By: mphobos <mphobos@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/15 18:08:31 by mphobos           #+#    #+#             */
-/*   Updated: 2020/01/15 18:47:56 by mphobos          ###   ########.fr       */
+/*   Updated: 2020/01/15 19:00:16 by mphobos          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_select.h"
 
-void		execute_command_sup(long c)
+void		execute_command_sup(t_lstr **lstr, long c)
 {
 	if (c == 32)
 	{
-		change_chose(lstr);
-		display_lstr(ret_winsize(0), ret_winsize(1), lstr);
+		change_chose(*lstr);
+		display_lstr(ret_winsize(0), ret_winsize(1), *lstr);
 	}
 	else if (c == 4414235)
 	{
-		change_chose_right(lstr, ret_winsize(1));
-		display_lstr(ret_winsize(0), ret_winsize(1), lstr);
+		change_chose_right(*lstr, ret_winsize(1));
+		display_lstr(ret_winsize(0), ret_winsize(1), *lstr);
 	}
 	else if (c == 4479771)
 	{
-		change_chose_left(lstr, ret_winsize(1));
-		display_lstr(ret_winsize(0), ret_winsize(1), lstr);
+		change_chose_left(*lstr, ret_winsize(1));
+		display_lstr(ret_winsize(0), ret_winsize(1), *lstr);
 	}
 	else if (c == 10)
 	{
 		clear_window();
 		return_term_mode();
-		print_result(lstr);
+		print_result(*lstr);
 		exit(0);
 	}
 }
 
-void		execute_command_sup1(long c)
+void		execute_command_sup1(t_lstr **lstr, long c)
 {
 	if (c == 27)
 	{
@@ -49,7 +49,7 @@ void		execute_command_sup1(long c)
 	else if (c == 127)
 	{
 		delete_lstr(&lstr);
-		display_lstr(ret_winsize(0), ret_winsize(1), lstr);
+		display_lstr(ret_winsize(0), ret_winsize(1), *lstr);
 	}
 }
 
@@ -75,7 +75,7 @@ void		execute_command(t_lstr *lstr)
 			change_hover_over(lstr, 1);
 			display_lstr(ret_winsize(0), ret_winsize(1), lstr);
 		}
-		execute_command_sup(c);
-		execute_command_sup1(c);
+		execute_command_sup(&lstr, c);
+		execute_command_sup1(&lstr, c);
 	}
 }
