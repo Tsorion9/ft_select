@@ -6,7 +6,7 @@
 /*   By: mphobos <mphobos@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/13 13:10:07 by mphobos           #+#    #+#             */
-/*   Updated: 2020/01/13 16:33:19 by mphobos          ###   ########.fr       */
+/*   Updated: 2020/01/15 15:04:42 by mphobos          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,8 @@ void        into_term_can_mode(void)
     new_settings.c_cc[VTIME] = 0;
     new_settings.c_cc[VMIN] = 1;
     tcsetattr(STDIN_FILENO, TCSANOW, &new_settings);
+    tputs(tgetstr("ti", NULL), 1, ft_putint);
+	tputs(tgetstr("vi", NULL), 1, ft_putint);
 }
 
 /*
@@ -36,6 +38,8 @@ void        into_term_can_mode(void)
 void        return_term_mode(void)
 {
     tcsetattr(STDIN_FILENO, TCSANOW, &settings);
+	tputs(tgetstr("ve", NULL), 1, ft_putint);
+	tputs(tgetstr("te", NULL), 1, ft_putint);
 }
 
 /*
@@ -45,8 +49,28 @@ void        return_term_mode(void)
 void        exit_program(int a)
 {
     (void)a;
+    clear_window();
     return_term_mode();
     exit(0);
+}
+
+void        signal_processing(int a)
+{
+    if (a == SIGTSTP)
+    {
+        return_term_mode();
+        signal(SIGTSTP, SIG_DFL);
+	    ioctl(STDERR_FILENO, TIOCSTI, "\032");
+    }
+    else if (a == SIGCONT)
+    {
+        into_term_can_mode();
+	    set_signal();
+    }
+    else if (a == SIGWINCH)
+    {
+        
+    }
 }
 
 /*
@@ -65,60 +89,31 @@ void        set_signal(void)
 		exit_program(0);
 	}
     signal(SIGINT, exit_program);
+    signal(SIGTSTP, signal_processing);
+    signal(SIGCONT, signal_processing);
+    signal(SIGWINCH, signal_processing);
 }
 
-void        change_hover_over(t_lstr *lstr, int flag)
-{
-    while (lstr->hover_over != 1)
-        lstr = lstr->next;
-    lstr->hover_over = 0;
-    if (flag == 0)
-        lstr->next->hover_over = 1;
-    else if (flag == 1)
-        lstr->prev->hover_over = 1;
-}
+/*
+** Печать результата
+*/
 
-void        change_chose(t_lstr *lstr)
+void        print_result(t_lstr *lstr)
 {
-    while (lstr->hover_over != 1)
-        lstr = lstr->next;
-    if (lstr->chose == 1)
-        lstr->chose = 0;
-    else
-        lstr->chose = 1;
-}
-
-void        change_chose_left_right(t_lstr *lstr, int lin, int flag)
-{
-    int     column;
-    int     c_lstr;
-    int     i;
-    t_lstr  *tmp;
-
-    c_lstr = count_lstr(lstr);
-    printf("%d", c_lstr);
-    column = c_lstr;
-    if (lin <= c_lstr)
-        column = (c_lstr - (c_lstr % lin)) / (c_lstr / lin);
-    while (lstr->hover_over != 1)
-        lstr = lstr->next;
-    tmp = lstr;
-    i = 0;
-    while (i < column)
+    while (lstr->last != 1)
     {
-        if (lstr->last == 1)
-            return ;
-        lstr = lstr->next;
-        if (flag == 1)
+        if (lstr->chose == 1)
         {
-            lstr = lstr->prev->prev;
-            if (lstr->next->last == 1)
-                return ;
+            ft_putstr(lstr->name);
+            write (1, " ", 1);
         }
-        i++;
+        lstr = lstr->next;
     }
-    tmp->hover_over = 0;
-    lstr->hover_over = 1;
+    if (lstr->chose == 1)
+    {
+        ft_putstr(lstr->name);
+        write (1, " ", 1);
+    }
 }
 
 void        execute_command(t_lstr *lstr)
@@ -128,7 +123,6 @@ void        execute_command(t_lstr *lstr)
     while(21)
     {
         read(STDERR_FILENO, &c, 1);
-        printf("%d\n", c);
         if (c == 66)
         {
             change_hover_over(lstr, 0);
@@ -146,14 +140,27 @@ void        execute_command(t_lstr *lstr)
         }
         else if (c == 67)
         {
-            change_chose_left_right(lstr, tgetnum("li"), 0);
+            change_chose_right(lstr, tgetnum("li"));
             display_lstr(tgetnum("co"), tgetnum("li"), lstr);
         }
         else if (c == 68)
         {
-            change_chose_left_right(lstr, tgetnum("li"), 1);
-            display_lstr(tgetnum("co"), tgetnum("li"), lstr); 
+            change_chose_left(lstr, tgetnum("li"));
+            display_lstr(tgetnum("co"), tgetnum("li"), lstr);
         }
+        else if (c == 10)
+        {
+            clear_window();
+            return_term_mode();
+            print_result(lstr);
+            exit(0);
+        }
+        /*else if (c == 27)
+        {
+            clear_window();
+            return_term_mode();
+            exit(0);
+        }*/
     }
 }
 
@@ -161,14 +168,15 @@ int         main(int ac, char **av)
 {
     t_lstr   *lstr;
 
-    into_term_can_mode();
     set_signal();
+    into_term_can_mode();
     if (ac < 2)
     {
-        ft_putstr("usage: ");
+        ft_putstr_fd("usage: ", STDERR_FILENO);
         ft_putstr(av[0]);
-        ft_putstr(" [arg1] [arg2] ...\n");
-        exit_program(0);
+        ft_putstr_fd(" [arg1] [arg2] ...\n", STDERR_FILENO);
+        return_term_mode();
+        return (1);
     }
     lstr = init_lstr(av + 1);
     display_lstr(tgetnum("co"), tgetnum("li"), lstr);
