@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   list.c                                             :+:      :+:    :+:   */
+/*   lstr.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mphobos <mphobos@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/13 13:10:01 by mphobos           #+#    #+#             */
-/*   Updated: 2020/01/13 14:55:07 by mphobos          ###   ########.fr       */
+/*   Updated: 2020/01/15 18:00:10 by mphobos          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,6 @@ t_lstr		*create_lstr(char *name)
 {
 	t_lstr		*new_lstr;
 	struct stat	str_stat;
-
 
 	if (!(new_lstr = (t_lstr*)malloc(sizeof(t_lstr))))
 		exit_program(0);
@@ -77,7 +76,7 @@ t_lstr		*init_lstr(char **av)
 		av++;
 	}
 	while (lstr->next != NULL)
-        lstr = lstr->next;
+		lstr = lstr->next;
 	lstr->last = 1;
 	lstr->next = head;
 	head->prev = lstr;

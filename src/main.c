@@ -6,11 +6,39 @@
 /*   By: mphobos <mphobos@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/13 13:10:07 by mphobos           #+#    #+#             */
-/*   Updated: 2020/01/15 15:04:42 by mphobos          ###   ########.fr       */
+/*   Updated: 2020/01/15 18:38:36 by mphobos          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_select.h"
+
+int			ft_putint(int c)
+{
+	return (write(STDERR_FILENO, &c, 1));
+}
+
+/*
+** Чистит окно
+*/
+
+void		clear_window(void)
+{
+	tputs(tgetstr("cl", NULL), 1, ft_putint);
+}
+
+/*
+** Возвращает размер окна
+*/
+
+int			ret_winsize(int a)
+{
+	struct winsize	w;
+
+	ioctl(STDERR_FILENO, TIOCGWINSZ, &w);
+	if (a == 0)
+		return (w.ws_col);
+	return (w.ws_row);
+}
 
 /*
 ** Настраивает терминал (неканонический ввод)
@@ -54,46 +82,6 @@ void        exit_program(int a)
     exit(0);
 }
 
-void        signal_processing(int a)
-{
-    if (a == SIGTSTP)
-    {
-        return_term_mode();
-        signal(SIGTSTP, SIG_DFL);
-	    ioctl(STDERR_FILENO, TIOCSTI, "\032");
-    }
-    else if (a == SIGCONT)
-    {
-        into_term_can_mode();
-	    set_signal();
-    }
-    else if (a == SIGWINCH)
-    {
-        
-    }
-}
-
-/*
-** Настройка сигналов и внесение терминала в БД termcap
-*/
-
-void        set_signal(void)
-{
-    char *termtype;
-	char room_termtype[2048];
-
-    termtype = getenv("TERM");
-	if (termtype == NULL || tgetent(room_termtype, termtype) != 1)
-	{
-		ft_putstr("error\n");
-		exit_program(0);
-	}
-    signal(SIGINT, exit_program);
-    signal(SIGTSTP, signal_processing);
-    signal(SIGCONT, signal_processing);
-    signal(SIGWINCH, signal_processing);
-}
-
 /*
 ** Печать результата
 */
@@ -116,72 +104,21 @@ void        print_result(t_lstr *lstr)
     }
 }
 
-void        execute_command(t_lstr *lstr)
-{
-    char    c;
-
-    while(21)
-    {
-        read(STDERR_FILENO, &c, 1);
-        if (c == 66)
-        {
-            change_hover_over(lstr, 0);
-            display_lstr(tgetnum("co"), tgetnum("li"), lstr);
-        }
-        else if (c == 65)
-        {
-            change_hover_over(lstr, 1);
-            display_lstr(tgetnum("co"), tgetnum("li"), lstr);
-        }
-        else if (c == 32)
-        {
-            change_chose(lstr);
-            display_lstr(tgetnum("co"), tgetnum("li"), lstr);
-        }
-        else if (c == 67)
-        {
-            change_chose_right(lstr, tgetnum("li"));
-            display_lstr(tgetnum("co"), tgetnum("li"), lstr);
-        }
-        else if (c == 68)
-        {
-            change_chose_left(lstr, tgetnum("li"));
-            display_lstr(tgetnum("co"), tgetnum("li"), lstr);
-        }
-        else if (c == 10)
-        {
-            clear_window();
-            return_term_mode();
-            print_result(lstr);
-            exit(0);
-        }
-        /*else if (c == 27)
-        {
-            clear_window();
-            return_term_mode();
-            exit(0);
-        }*/
-    }
-}
-
 int         main(int ac, char **av)
 {
-    t_lstr   *lstr;
-
-    set_signal();
-    into_term_can_mode();
     if (ac < 2)
     {
-        ft_putstr_fd("usage: ", STDERR_FILENO);
+        ft_putstr("usage: ");
         ft_putstr(av[0]);
-        ft_putstr_fd(" [arg1] [arg2] ...\n", STDERR_FILENO);
-        return_term_mode();
-        return (1);
+        ft_putstr(" [arg1] [arg2] ...\n");
+        return (0);
     }
+    set_signal();
+    into_term_can_mode();
     lstr = init_lstr(av + 1);
-    display_lstr(tgetnum("co"), tgetnum("li"), lstr);
+    display_lstr(ret_winsize(0), ret_winsize(1), lstr);
     execute_command(lstr);
-    free_lstr(lstr);
-    return_term_mode();
+    //free_lstr(lstr);
+    //return_term_mode();
     return (0);
 }
