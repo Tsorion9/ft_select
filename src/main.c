@@ -88,6 +88,39 @@ void        change_chose(t_lstr *lstr)
         lstr->chose = 1;
 }
 
+void        change_chose_left_right(t_lstr *lstr, int lin, int flag)
+{
+    int     column;
+    int     c_lstr;
+    int     i;
+    t_lstr  *tmp;
+
+    c_lstr = count_lstr(lstr);
+    printf("%d", c_lstr);
+    column = c_lstr;
+    if (lin <= c_lstr)
+        column = (c_lstr - (c_lstr % lin)) / (c_lstr / lin);
+    while (lstr->hover_over != 1)
+        lstr = lstr->next;
+    tmp = lstr;
+    i = 0;
+    while (i < column)
+    {
+        if (lstr->last == 1)
+            return ;
+        lstr = lstr->next;
+        if (flag == 1)
+        {
+            lstr = lstr->prev->prev;
+            if (lstr->next->last == 1)
+                return ;
+        }
+        i++;
+    }
+    tmp->hover_over = 0;
+    lstr->hover_over = 1;
+}
+
 void        execute_command(t_lstr *lstr)
 {
     char    c;
@@ -95,23 +128,31 @@ void        execute_command(t_lstr *lstr)
     while(21)
     {
         read(STDERR_FILENO, &c, 1);
+        printf("%d\n", c);
         if (c == 66)
         {
             change_hover_over(lstr, 0);
-            clear_window();
             display_lstr(tgetnum("co"), tgetnum("li"), lstr);
         }
         else if (c == 65)
         {
             change_hover_over(lstr, 1);
-            clear_window();
             display_lstr(tgetnum("co"), tgetnum("li"), lstr);
         }
         else if (c == 32)
         {
             change_chose(lstr);
-            clear_window();
             display_lstr(tgetnum("co"), tgetnum("li"), lstr);
+        }
+        else if (c == 67)
+        {
+            change_chose_left_right(lstr, tgetnum("li"), 0);
+            display_lstr(tgetnum("co"), tgetnum("li"), lstr);
+        }
+        else if (c == 68)
+        {
+            change_chose_left_right(lstr, tgetnum("li"), 1);
+            display_lstr(tgetnum("co"), tgetnum("li"), lstr); 
         }
     }
 }
