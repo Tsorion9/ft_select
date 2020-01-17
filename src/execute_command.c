@@ -6,7 +6,7 @@
 /*   By: mphobos <mphobos@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/15 18:08:31 by mphobos           #+#    #+#             */
-/*   Updated: 2020/01/15 19:00:16 by mphobos          ###   ########.fr       */
+/*   Updated: 2020/01/16 13:13:18 by mphobos          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,7 @@ void		execute_command_sup(t_lstr **lstr, long c)
 		clear_window();
 		return_term_mode();
 		print_result(*lstr);
+		free_lstr(*lstr);
 		exit(0);
 	}
 }
@@ -44,6 +45,7 @@ void		execute_command_sup1(t_lstr **lstr, long c)
 	{
 		clear_window();
 		return_term_mode();
+		free_lstr(*lstr);
 		exit(0);
 	}
 	else if (c == 127)

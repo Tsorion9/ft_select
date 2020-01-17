@@ -6,7 +6,7 @@
 /*   By: mphobos <mphobos@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/15 17:31:08 by mphobos           #+#    #+#             */
-/*   Updated: 2020/01/15 18:02:44 by mphobos          ###   ########.fr       */
+/*   Updated: 2020/01/16 13:02:16 by mphobos          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,13 +28,13 @@ void		signal_processing(int a)
 	{
 		into_term_can_mode();
 		set_signal();
-		display_lstr(ret_winsize(0), ret_winsize(1), lstr);
+		display_lstr(ret_winsize(0), ret_winsize(1), g_lstr);
 	}
 	else if (a == SIGWINCH)
 	{
 		into_term_can_mode();
 		set_signal();
-		display_lstr(ret_winsize(0), ret_winsize(1), lstr);
+		display_lstr(ret_winsize(0), ret_winsize(1), g_lstr);
 	}
 }
 
@@ -51,7 +51,7 @@ void		set_signal(void)
 	if (termtype == NULL || tgetent(room_termtype, termtype) != 1)
 	{
 		ft_putstr("error\n");
-		exit_program(0);
+		exit(0);
 	}
 	signal(SIGINT, exit_program);
 	signal(SIGTSTP, signal_processing);

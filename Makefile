@@ -6,13 +6,13 @@
 #    By: mphobos <mphobos@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2019/10/12 15:20:15 by mphobos           #+#    #+#              #
-#    Updated: 2020/01/15 18:10:23 by mphobos          ###   ########.fr        #
+#    Updated: 2020/01/16 12:37:05 by mphobos          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = ft_select
 C = main.c lstr.c display_str.c check_winsize.c change_lstr.c free.c \
-	signal.c execute_command.c
+	signal.c execute_command.c other_functions.c
 SRC = $(patsubst %,src/%,$(C))
 CC = gcc
 INCLUDE = includes
